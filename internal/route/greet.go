@@ -14,7 +14,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
     greet := Greet{
         Data: "Welcome to the nutrition service!",
     }
-    res.SendSuccess(w, greet)
+    res.SendJson(w, http.StatusOK, greet)
 }
 
 func GreetRoute(r *mux.Router) {

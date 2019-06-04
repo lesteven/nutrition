@@ -11,11 +11,17 @@ type NutData struct {
 }
 
 func nutritionHandler(w http.ResponseWriter, r *http.Request) {
-    nutrition := NutData{
-        Data: "Nutrition Data!",
+    switch r.Method {
+        case http.MethodGet:
+            nutrition := NutData{
+                Data: "Nutrition Data!",
+            }
+            res.SendJson(w, http.StatusOK, nutrition)
+        case http.MethodPost:
+            res.SendError(w, http.StatusBadRequest, "cant post!")
     }
-    res.SendSuccess(w, nutrition)
 }
+
 
 func NutritionRoute(r *mux.Router) {
     r.HandleFunc("/nutrition", nutritionHandler)
