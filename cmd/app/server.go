@@ -4,28 +4,27 @@ import (
     "log"
     "net/http"
     "github.com/gorilla/mux"
-    "encoding/json"
+    "nutrition/internal/res"
 )
 
 type Greet struct {
     Data string `json:"data"`
 }
 
-
-
 func handler(w http.ResponseWriter, r *http.Request) {
     greet := Greet{
         Data: "Welcome to the nutrition service!",
     }
-    json.NewEncoder(w).Encode(greet)
+    res.SendSuccess(w, greet)
 }
 
 func nutritionHandler(w http.ResponseWriter, r *http.Request) {
     nutrition := Greet{
         Data: "Nutrition Data!",
     }
-    json.NewEncoder(w).Encode(nutrition)
+    res.SendSuccess(w, nutrition)
 }
+
 
 func main() {
     r := mux.NewRouter()
