@@ -7,6 +7,7 @@ import (
 )
 
 type NutData struct {
+    Status int `json:"status"`
     Data string `json:"data"`
 }
 
@@ -14,6 +15,7 @@ func nutritionHandler(w http.ResponseWriter, r *http.Request) {
     switch r.Method {
         case http.MethodGet:
             nutrition := NutData{
+                Status: http.StatusOK,
                 Data: "Nutrition Data!",
             }
             res.SendJson(w, http.StatusOK, nutrition)

@@ -12,14 +12,16 @@ func SendJson(w http.ResponseWriter, status int, data interface{}) {
 }
 
 type ErrJson struct {
-    Err string `json:"error"`
+    Status int `json:"status"`
+    Error string `json:"error"`
 }
 
 func SendError(w http.ResponseWriter, status int, errMsg string) {
     w.WriteHeader(status)
     w.Header().Add("Content-Type", "application/json")
     data := ErrJson {
-        Err: errMsg,
+        Status: status,
+        Error: errMsg,
     }
     json.NewEncoder(w).Encode(data)
 }
