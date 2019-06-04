@@ -5,9 +5,14 @@ import (
     "encoding/json"
 )
 
-func SendJson(w http.ResponseWriter, status int, data interface{}) {
+func header(w http.ResponseWriter, status int) {
     w.WriteHeader(status)
     w.Header().Add("Content-Type", "application/json")
+}
+
+
+func SendJson(w http.ResponseWriter, status int, data interface{}) {
+    header(w, status)
     json.NewEncoder(w).Encode(data)
 }
 
@@ -17,8 +22,7 @@ type ErrJson struct {
 }
 
 func SendError(w http.ResponseWriter, status int, errMsg string) {
-    w.WriteHeader(status)
-    w.Header().Add("Content-Type", "application/json")
+    header(w, status)
     data := ErrJson {
         Status: status,
         Error: errMsg,
