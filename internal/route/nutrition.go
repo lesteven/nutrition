@@ -1,9 +1,10 @@
 package route
 
 import (
-    "nutrition/internal/res"
     "net/http"
     "github.com/gorilla/mux"
+    "nutrition/internal/res"
+    "nutrition/internal/pgdb"
 )
 
 type NutData struct {
@@ -24,7 +25,13 @@ func nutritionHandler(w http.ResponseWriter, r *http.Request) {
     }
 }
 
+func sqlHandler(w http.ResponseWriter, r *http.Request) {
+    db := pgdb.InitDb()
+    pgdb.GetTime(db)
+    res.SendJson(w, http.StatusOK, "hello")
+}
 
 func NutritionRoute(r *mux.Router) {
     r.HandleFunc("/nutrition", nutritionHandler)
+    r.HandleFunc("/sql", sqlHandler)
 }
