@@ -3,7 +3,6 @@ package route
 import (
     "nutrition/internal/res"
     "net/http"
-    "github.com/gorilla/mux"
 )
 
 type Greet struct {
@@ -11,7 +10,7 @@ type Greet struct {
     Data string `json:"data"`
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
+func GreetHandler(w http.ResponseWriter, r *http.Request) {
     greet := Greet{
         Status: http.StatusOK,
         Data: "Welcome to the nutrition service!",
@@ -19,6 +18,3 @@ func handler(w http.ResponseWriter, r *http.Request) {
     res.SendJson(w, http.StatusOK, greet)
 }
 
-func GreetRoute(r *mux.Router) {
-    r.HandleFunc("/", handler)
-}
