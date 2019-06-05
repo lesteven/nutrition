@@ -28,3 +28,15 @@ func GetTime(db *sql.DB) *sql.Rows {
     return data
 }
 
+type FoodData struct {
+    Food string `json:"food"`
+    Num int `json:"num"`
+}
+
+func GetFood(db *sql.DB) FoodData {
+    food := FoodData{}
+    data := db.QueryRow("SELECT * FROM data where food = $1", "carrot").Scan(&food.Food, &food.Num)
+    fmt.Println(data)
+    fmt.Println(food)
+    return food
+}
