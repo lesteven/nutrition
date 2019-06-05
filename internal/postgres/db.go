@@ -19,11 +19,12 @@ func InitDb() *sql.DB {
     return db
 }
 
-func GetTime(db *sql.DB) {
+func GetTime(db *sql.DB) *sql.Rows {
     data, err := db.Query("SELECT now()")
     if err != nil {
         log.Fatal(err)
     }
     fmt.Println(data)
+    return data
 }
 
