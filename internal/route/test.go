@@ -10,7 +10,7 @@ import (
 
 func TestHandler(db *sql.DB) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
-        data := postgres.GetFood(db)
+        data := postgres.GetAll(db)
         res.SendJson(w, http.StatusOK, data)
     }
 }

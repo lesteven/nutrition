@@ -32,3 +32,7 @@ func SendError(w http.ResponseWriter, status int, errMsg string) {
     }
     json.NewEncoder(w).Encode(data)
 }
+
+type Json struct {
+    Status int `json:"status"`
+}
