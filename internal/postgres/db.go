@@ -49,10 +49,18 @@ func GetFood(db *sql.DB) interface{} {
 
 func GetAll(db *sql.DB) interface{} {
     food := JsonData{}
-    rows, err := db.Query("SELECT * FROM data")
+    rows, err := db.Query("SELECT * FROM data LIMIT $1", 2)
     if err != nil {
         panic(err)
     }
-    fmt.Println(rows)
+    for rows.Next() {
+        data := FoodData{}
+        err = rows.Scan(&data.Food, &data.Num)
+        if err != nil {
+            panic(err)
+        }
+        fmt.Println(data)
+    }
+    fmt.Println("=======")
     return food
 }

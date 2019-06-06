@@ -8,12 +8,6 @@ import (
     "nutrition/internal/postgres"
 )
 
-/*
-type Env struct {
-    db
-}
-*/
-
 func main() {
     r := mux.NewRouter()
 
