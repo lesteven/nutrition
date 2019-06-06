@@ -10,6 +10,7 @@ func main() {
     r := mux.NewRouter()
 
     db := InitDb()
+    InitElastic()
 
     r.HandleFunc("/", GreetHandler)
     r.HandleFunc("/nutrition", NutritionHandler(db))
