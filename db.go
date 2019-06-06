@@ -1,4 +1,4 @@
-package postgres
+package main
 
 import (
     "reflect"
@@ -6,7 +6,6 @@ import (
     "log"
     "database/sql"
     _ "github.com/lib/pq"
-    "nutrition/internal/res"
 )
 
 // db is type *sql.DB
@@ -20,9 +19,9 @@ func InitDb() *sql.DB {
     return db
 }
 
-// res.json (a struct) embedded within FoodData
+// json (a struct) embedded within FoodData
 type JsonData struct {
-    res.Json
+    Json
     FoodData `json:"data"`
 }
 type FoodData struct {
@@ -40,10 +39,10 @@ func GetFood(db *sql.DB) interface{} {
             food.Status = 200
             return food
         case sql.ErrNoRows:
-            return res.ErrJson{204, "There was no food"}
+            return ErrJson{204, "There was no food"}
         default:
             panic(err)
-            return res.ErrJson{500, "There was a server error"}
+            return ErrJson{500, "There was a server error"}
     }
 }
 

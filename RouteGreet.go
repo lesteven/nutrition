@@ -1,7 +1,6 @@
-package route
+package main
 
 import (
-    "nutrition/internal/res"
     "net/http"
 )
 
@@ -15,6 +14,6 @@ func GreetHandler(w http.ResponseWriter, r *http.Request) {
         Status: http.StatusOK,
         Data: "Welcome to the nutrition service!",
     }
-    res.SendJson(w, http.StatusOK, greet)
+    SendJson(w, http.StatusOK, greet)
 }
 

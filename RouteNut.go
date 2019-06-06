@@ -1,9 +1,8 @@
-package route
+package main
 
 import (
     "net/http"
     "database/sql"
-    "nutrition/internal/res"
 )
 
 type NutData struct {
@@ -20,9 +19,9 @@ func NutritionHandler(db *sql.DB) http.HandlerFunc {
                     Status: http.StatusOK,
                     Data: "Nutrition Data!",
                 }
-                res.SendJson(w, http.StatusOK, nutrition)
+                SendJson(w, http.StatusOK, nutrition)
             case http.MethodPost:
-                res.SendError(w, http.StatusBadRequest, "cant post!")
+                SendError(w, http.StatusBadRequest, "cant post!")
         }
     }
 }
