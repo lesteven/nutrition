@@ -1,7 +1,6 @@
 package main
 
 import (
-    "reflect"
     "fmt"
     "log"
     "database/sql"
@@ -12,7 +11,6 @@ import (
 func InitDb() *sql.DB {
     connStr := "user=steven dbname=nutrition sslmode=disable"
     db, err := sql.Open("postgres", connStr)
-    log.Println(reflect.TypeOf(db))
     if err != nil {
         log.Fatal(err)
     }
