@@ -1,6 +1,8 @@
+DROP TABLE IF EXISTS derivation;
+
 
 CREATE TABLE derivation (
-    Derivation_Code VARCHAR(4) PRIMARY KEY,
+    Derivation_Code TEXT PRIMARY KEY,
     Derivation_Code_Description TEXT
 );
 

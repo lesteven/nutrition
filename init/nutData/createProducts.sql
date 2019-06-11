@@ -1,12 +1,13 @@
+DROP TABLE product;
 
 CREATE TABLE product (
-    NDB_No INTEGER PRIMARY KEY,
+    NDB_No TEXT,
     Long_Name VARCHAR(200),
     Data_Source TEXT,
-    GTIN_UPC BIGINT,
+    GTIN_UPC TEXT,
     Manufacturer TEXT,
-    Date_Modified TIMESTAMP,
-    Date_available TIMESTAMP,
+    Date_Modified TEXT,
+    Date_available TEXT,
     Ingredients TEXT
 );
 

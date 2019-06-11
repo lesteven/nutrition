@@ -1,9 +1,13 @@
+DROP TABLE IF EXISTS nutrient;
 
 CREATE TABLE nutrient (
-    NDB_No INTEGER REFERENCES product (NDB_No),
-    Nutrient_Code SMALLINT,
+    NDB_No TEXT,
+    Nutrient_Code TEXT,
     Nutrient_Name TEXT,
-    Derivation_Code VARCHAR(4) REFERENCES derivation (Derivation_Code),
-    Output_Value REAL,
-    Output_UOM VARCHAR(4)
+    Derivation_Code TEXT,
+    Output_Value TEXT,
+    Output_UOM VARCHAR(10)
 );
+
+
+\copy nutrient from '/home/steven/Downloads/nutData/data/Nutrients.csv' DELIMITER ',' CSV
