@@ -22,6 +22,8 @@ def writeErr(log, prod_num):
     with open(log, "a") as myfile:
         myfile.write(prod_num + "\n")
 
+# each product has multiple nutrients
+# therefore must iterate through data to add nutrients to json
 def makeJson(data):
     json = {
         'Name': data[0][0], 
