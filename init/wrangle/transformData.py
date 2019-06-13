@@ -16,9 +16,11 @@ sql = "SELECT long_name, nutrient_name, output_value, output_uom, \
     WHERE product.ndb_no = %s"
 
 
-def writeErr(log):
+# append errors to log
+def writeErr(log, prod_num):
     with open(log, "a") as myfile:
         myfile.write(prod_num + "\n")
+
 
 # create json from sql queries, then insert into elasticsearch
 def getData(prod_num):
@@ -30,17 +32,20 @@ def getData(prod_num):
             json[each[1]] = {'Value': each[2], 'Unit': each[3]}
         return json
     else:
-        writeErr("getErr.txt")
+        writeErr("getErr.txt", prod_num)
 
 
+# insert data into elasticsearch
 def insertData(json, prod_num):
     res = es.index(index='product', doc_type='food', id=prod_num, body=json)
     if res['_shards']['failed'] != 0:
-        writeErr("inserErr.txt")
+        writeErr("inserErr.txt", prod_num)
 
 
-# foodData = '/home/steven/Downloads/nutData/data/Products.csv'
-foodData = '/home/steven/Downloads/nutData/data/SomeProducts.csv'
+
+foodData = '/home/steven/Downloads/nutData/data/Products.csv'
+# foodData = '/home/steven/Downloads/nutData/data/test.csv'
+
 
 # access file and read first csv value in each line 
 # i = 0
@@ -56,5 +61,6 @@ with open(foodData) as f:
             break
             '''
 
+# close postgresql
 cur.close()
 conn.close()
