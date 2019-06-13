@@ -20,3 +20,6 @@
 # Unignore all dirs
 !*/
 
+# ignore transform error logs
+getErr.txt
+insertErr.txt
