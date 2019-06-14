@@ -5,9 +5,10 @@ import (
     "encoding/json"
 )
 
+// add content type before status
 func header(w http.ResponseWriter, status int) {
-    w.WriteHeader(status)
     w.Header().Add("Content-Type", "application/json")
+    w.WriteHeader(status)
 }
 
 // takes empty interface b/c JSON data may be represented by different
