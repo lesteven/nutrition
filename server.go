@@ -11,16 +11,9 @@ func main() {
 
     db := InitDb()
     es := InitElastic()
-    res, err := es.Search(
-        es.Search.WithIndex("customer"),
-        es.Search.WithPretty(),
-    )
-    if err != nil {
-        panic(err)
-    }
-    log.Println(res)
+
     r.HandleFunc("/", GreetHandler)
-    r.HandleFunc("/elastic", ElasticHandler)
+    r.HandleFunc("/elastic", ElasticHandler(es))
     r.HandleFunc("/nutrition", NutritionHandler(db))
     r.HandleFunc("/test", TestHandler(db))
 
