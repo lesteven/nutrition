@@ -8,7 +8,6 @@ import (
     "encoding/json"
     "io"
     "io/ioutil"
-    "reflect"
 )
 
 type EsData struct {
@@ -30,7 +29,7 @@ type EsData struct {
     } `json:"hits"`
 }
 
-type Data map[string]map[string]interface{}
+type Data map[string]map[string][]interface{}
 
 func dataToString(body io.ReadCloser, w http.ResponseWriter) {
     buf := new(bytes.Buffer)
@@ -44,7 +43,11 @@ func dataToMap(body io.ReadCloser, w http.ResponseWriter) {
     var h Data
     data, _ := ioutil.ReadAll(body)
     json.Unmarshal(data, &h)
-    fmt.Println(h)
+    /*
+    for _, each := range h["hits"]["hits"] {
+        fmt.Println(each)
+    }
+    */
 
     SendJson(w, 200, h["hits"]["hits"])
 }
@@ -53,8 +56,12 @@ func dataToStruct(body io.ReadCloser, w http.ResponseWriter) {
     h := EsData{}
     w.Header().Add("Content-Type", "application/json")
     json.NewDecoder(body).Decode(&h)
-    fmt.Println(h.Hits.Hits)
-    json.NewEncoder(w).Encode(h.Hits.Hits)
+    /*
+    for _, each := range h.Hits.Hits {
+        fmt.Println(each["_source"])
+    }
+    */
+    json.NewEncoder(w).Encode(h)
 }
 
 func ElasticHandler (es *elasticsearch.Client) http.HandlerFunc {
@@ -68,9 +75,8 @@ func ElasticHandler (es *elasticsearch.Client) http.HandlerFunc {
             panic(err)
         }
         defer res.Body.Close()
-        fmt.Println(reflect.TypeOf(res))
-        fmt.Println(reflect.TypeOf(res.Body))
-        dataToStruct(res.Body, w)
+
+        dataToMap(res.Body, w)
 
     }
 }
