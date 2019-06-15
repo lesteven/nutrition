@@ -3,37 +3,59 @@ package main
 import (
     "net/http"
     "github.com/elastic/go-elasticsearch/v8"
-//    "bytes"
-   "fmt"
+    "bytes"
+    "fmt"
     "encoding/json"
+    "io"
     "io/ioutil"
     "reflect"
 )
 
-type Results struct {
-
-}
-
-type Hits struct {
+type EsData struct {
     Took int `json:"took"`
     TimedOut bool `json:"timed_out"`
     Shards struct {
         Total int `json:"total"`
         Success int `json:"successful"`
-        skipped int `json:"skipped"`
-        failed int `json:"failed""`
+        Skipped int `json:"skipped"`
+        Failed int `json:"failed""`
     } `json:"_shards"` 
-    hits struct {
+    Hits struct {
         Total struct {
             Value int `json:"value"`
-            Relation string `json:relation"`
+            Relation string `json:"relation"`
         } `json:"total"`
         Score float32 `json:"max_score"`
-        Hits []interface{} `json: "hits"`
-    } `json: "hits"`
+        Hits []map[string]interface{} `json:"hits"`
+    } `json:"hits"`
 }
 
 type Data map[string]map[string]interface{}
+
+func dataToString(body io.ReadCloser, w http.ResponseWriter) {
+    buf := new(bytes.Buffer)
+    buf.ReadFrom(body)
+    newStr := buf.String()
+    w.Header().Add("Content-Type", "application/json")
+    fmt.Fprintf(w, newStr)
+}
+
+func dataToMap(body io.ReadCloser, w http.ResponseWriter) {
+    var h Data
+    data, _ := ioutil.ReadAll(body)
+    json.Unmarshal(data, &h)
+    fmt.Println(h)
+
+    SendJson(w, 200, h["hits"]["hits"])
+}
+
+func dataToStruct(body io.ReadCloser, w http.ResponseWriter) {
+    h := EsData{}
+    w.Header().Add("Content-Type", "application/json")
+    json.NewDecoder(body).Decode(&h)
+    fmt.Println(h.Hits.Hits)
+    json.NewEncoder(w).Encode(h.Hits.Hits)
+}
 
 func ElasticHandler (es *elasticsearch.Client) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
@@ -46,28 +68,10 @@ func ElasticHandler (es *elasticsearch.Client) http.HandlerFunc {
             panic(err)
         }
         defer res.Body.Close()
+        fmt.Println(reflect.TypeOf(res))
+        fmt.Println(reflect.TypeOf(res.Body))
+        dataToStruct(res.Body, w)
 
-/*
-        buf := new(bytes.Buffer)
-        buf.ReadFrom(res.Body)
-        newStr := buf.String()
-
-        */
-
-        var h Data
-        body, _ := ioutil.ReadAll(res.Body)
-        err = json.Unmarshal(body, &h)
-        fmt.Println(h["hits"]["hits"])
-        fmt.Println(reflect.TypeOf(h["hits"]["hits"]))
-
-        SendJson(w, 200, h["hits"]["hits"])
-    /*
-        var h 
-        w.Header().Add("Content-Type", "application/json")
-        json.NewEncoder(w).Encode(h)
-        fmt.Println(h)
-        //fmt.Fprintf(w, newStr)
-*/
     }
 }
 
