@@ -8,9 +8,6 @@ import (
     //"io/ioutil"
 )
 
-type SearchData struct {
-    Search string `json:"search"`
-}
 
 func TestHandler(db *sql.DB) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
