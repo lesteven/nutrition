@@ -11,11 +11,17 @@ func header(w http.ResponseWriter, status int) {
     w.WriteHeader(status)
 }
 
+type Json struct {
+    Status int `json:"status"`
+    Data interface{} `json:"data"`
+}
+
 // takes empty interface b/c JSON data may be represented by different
 // structs
 func SendJson(w http.ResponseWriter, status int, data interface{}) {
     header(w, status)
-    json.NewEncoder(w).Encode(data)
+    jsonData := Json{status, data}
+    json.NewEncoder(w).Encode(jsonData)
 }
 
 type ErrJson struct {
@@ -32,8 +38,4 @@ func SendError(w http.ResponseWriter, status int, errMsg string) {
         Error: errMsg,
     }
     json.NewEncoder(w).Encode(data)
-}
-
-type Json struct {
-    Status int `json:"status"`
 }

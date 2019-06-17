@@ -3,81 +3,69 @@ package main
 import (
     "net/http"
     "github.com/elastic/go-elasticsearch/v8"
-    "bytes"
+	"github.com/elastic/go-elasticsearch/v8/esutil"
     "fmt"
     "encoding/json"
-    "io"
-    "io/ioutil"
 )
 
-type EsData struct {
-    Took int `json:"took"`
-    TimedOut bool `json:"timed_out"`
-    Shards struct {
-        Total int `json:"total"`
-        Success int `json:"successful"`
-        Skipped int `json:"skipped"`
-        Failed int `json:"failed""`
-    } `json:"_shards"` 
-    Hits struct {
-        Total struct {
-            Value int `json:"value"`
-            Relation string `json:"relation"`
-        } `json:"total"`
-        Score float32 `json:"max_score"`
-        Hits []map[string]interface{} `json:"hits"`
-    } `json:"hits"`
+type SearchData struct {
+    Search string `json:"search"`
 }
 
-type Data map[string]map[string][]interface{}
+func searchES(w http.ResponseWriter, es *elasticsearch.Client, search string) {
+    res, err := es.Search(
+        es.Search.WithIndex("product"),
+        es.Search.WithPretty(),
+    )
 
-func dataToString(body io.ReadCloser, w http.ResponseWriter) {
-    buf := new(bytes.Buffer)
-    buf.ReadFrom(body)
-    newStr := buf.String()
-    w.Header().Add("Content-Type", "application/json")
-    fmt.Fprintf(w, newStr)
-}
-
-func dataToMap(body io.ReadCloser, w http.ResponseWriter) {
-    var h Data
-    data, _ := ioutil.ReadAll(body)
-    json.Unmarshal(data, &h)
-    /*
-    for _, each := range h["hits"]["hits"] {
-        fmt.Println(each)
+    if err != nil {
+        panic(err)
     }
-    */
+    defer res.Body.Close()
 
-    SendJson(w, 200, h["hits"]["hits"])
+    dataToMap(res.Body, w)
 }
 
-func dataToStruct(body io.ReadCloser, w http.ResponseWriter) {
-    h := EsData{}
-    w.Header().Add("Content-Type", "application/json")
-    json.NewDecoder(body).Decode(&h)
-    /*
-    for _, each := range h.Hits.Hits {
-        fmt.Println(each["_source"])
+func fuzzySearch(w http.ResponseWriter, es *elasticsearch.Client, search string) {
+    query := map[string]interface{}{
+        "query": map[string]interface{}{
+            "fuzzy": map[string]interface{}{
+                "Name": search,
+            },
+        },
     }
-    */
-    json.NewEncoder(w).Encode(h)
+    res, err := es.Search(
+        es.Search.WithIndex("product"),
+        es.Search.WithBody(esutil.NewJSONReader(&query)),
+        es.Search.WithPretty(),
+    )
+
+    if err != nil {
+        panic(err)
+    }
+    defer res.Body.Close()
+
+    dataToMap(res.Body, w)
+
 }
 
 func ElasticHandler (es *elasticsearch.Client) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
-        res, err := es.Search(
-            es.Search.WithIndex("customer"),
-            es.Search.WithPretty(),
-        )
+        switch r.Method {
+            case http.MethodPost:
+                var search SearchData
 
-        if err != nil {
-            panic(err)
+                err := json.NewDecoder(r.Body).Decode(&search)
+
+                if err != nil {
+                    fmt.Println(err)
+                    fmt.Println("error with decoder")
+                    panic(err)
+                }
+
+                fmt.Println(search.Search)
+                fuzzySearch(w, es, search.Search)
         }
-        defer res.Body.Close()
-
-        dataToMap(res.Body, w)
-
     }
 }
 
