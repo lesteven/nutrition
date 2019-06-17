@@ -19,7 +19,6 @@ func InitElastic() *elasticsearch.Client {
 }
 
 
-
 // get json data and turn it into a string
 func dataToString(body io.ReadCloser, w http.ResponseWriter) {
     buf := new(bytes.Buffer)
@@ -37,11 +36,6 @@ func dataToMap(body io.ReadCloser, w http.ResponseWriter) {
     var h Data
     data, _ := ioutil.ReadAll(body)
     json.Unmarshal(data, &h)
-    /*
-    for _, each := range h["hits"]["hits"] {
-        fmt.Println(each)
-    }
-    */
     SendJson(w, 200, h["hits"]["hits"])
 }
 
@@ -69,10 +63,5 @@ func dataToStruct(body io.ReadCloser, w http.ResponseWriter) {
     h := EsData{}
     w.Header().Add("Content-Type", "application/json")
     json.NewDecoder(body).Decode(&h)
-    /*
-    for _, each := range h.Hits.Hits {
-        fmt.Println(each["_source"])
-    }
-    */
-    json.NewEncoder(w).Encode(h)
+    json.NewEncoder(w).Encode(h.Hits)
 }

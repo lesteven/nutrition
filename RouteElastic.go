@@ -6,13 +6,16 @@ import (
 	"github.com/elastic/go-elasticsearch/v8/esutil"
     "fmt"
     "encoding/json"
+    "strconv"
 )
 
 type SearchData struct {
     Search string `json:"search"`
 }
 
-func fuzzySearch(w http.ResponseWriter, es *elasticsearch.Client, search string) {
+func fuzzySearch(w http.ResponseWriter, es *elasticsearch.Client,
+    search string, queries map[string][]string) {
+
     query := map[string]interface{}{
         "query": map[string]interface{}{
             "fuzzy": map[string]interface{}{
@@ -20,10 +23,24 @@ func fuzzySearch(w http.ResponseWriter, es *elasticsearch.Client, search string)
             },
         },
     }
+    size := 10
+    offset := 0
+    if len(queries["size"]) >= 1 && len(queries["offset"]) >= 1 {
+        querySize, _ := strconv.Atoi(queries["size"][0])
+        queryOffset, _ := strconv.Atoi(queries["offset"][0])
+        if querySize >= 0 && querySize <= 20 {
+            size = querySize
+        }
+        if queryOffset >= 0 && queryOffset <= 500 {
+            offset = queryOffset
+        }
+    }
     res, err := es.Search(
         es.Search.WithIndex("product"),
         es.Search.WithBody(esutil.NewJSONReader(&query)),
         es.Search.WithPretty(),
+        es.Search.WithSize(size),
+        es.Search.WithFrom(offset),
     )
 
     if err != nil {
@@ -31,7 +48,7 @@ func fuzzySearch(w http.ResponseWriter, es *elasticsearch.Client, search string)
     }
     defer res.Body.Close()
 
-    dataToMap(res.Body, w)
+    dataToStruct(res.Body, w)
 
 }
 
@@ -40,7 +57,7 @@ func ElasticHandler (es *elasticsearch.Client) http.HandlerFunc {
         switch r.Method {
             case http.MethodPost:
                 var search SearchData
-
+                queries := r.URL.Query()
                 err := json.NewDecoder(r.Body).Decode(&search)
 
                 if err != nil {
@@ -49,7 +66,7 @@ func ElasticHandler (es *elasticsearch.Client) http.HandlerFunc {
                     panic(err)
                 }
 
-                fuzzySearch(w, es, search.Search)
+                fuzzySearch(w, es, search.Search, queries)
         }
     }
 }
