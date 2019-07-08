@@ -8,10 +8,31 @@ import (
     "io/ioutil"
     "bytes"
     "encoding/json"
+    "os"
 )
 
+type Configuration struct {
+    Addresses []string
+}
+
+func GetConfig() Configuration {
+    file, _ := os.Open("conf.json")
+    defer file.Close()
+    decoder := json.NewDecoder(file)
+    config := Configuration{}
+    err := decoder.Decode(&config)
+    if err != nil {
+        panic(err)
+    }
+    return config
+}
+
 func InitElastic() *elasticsearch.Client {
-    es, err := elasticsearch.NewDefaultClient()
+    config := GetConfig()
+    cfg := elasticsearch.Config{
+        Addresses: config.Addresses,
+    }
+    es, err := elasticsearch.NewClient(cfg)
     if err != nil {
         panic(err)
     }
