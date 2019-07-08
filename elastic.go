@@ -8,7 +8,6 @@ import (
     "io/ioutil"
     "bytes"
     "encoding/json"
-    "os"
 )
 
 type Configuration struct {
@@ -16,11 +15,12 @@ type Configuration struct {
 }
 
 func GetConfig() Configuration {
-    file, _ := os.Open("conf.json")
-    defer file.Close()
-    decoder := json.NewDecoder(file)
     config := Configuration{}
-    err := decoder.Decode(&config)
+    data, err := ioutil.ReadFile("conf.json")
+    if err != nil {
+        panic(err)
+    }
+    err = json.Unmarshal(data, &config)
     if err != nil {
         panic(err)
     }
