@@ -8,29 +8,16 @@ import (
     "io/ioutil"
     "bytes"
     "encoding/json"
+    "os"
 )
 
-type Configuration struct {
-    Addresses []string
-}
-
-func GetConfig() Configuration {
-    config := Configuration{}
-    data, err := ioutil.ReadFile("conf.json")
-    if err != nil {
-        panic(err)
-    }
-    err = json.Unmarshal(data, &config)
-    if err != nil {
-        panic(err)
-    }
-    return config
-}
+var address = os.Getenv("address")
 
 func InitElastic() *elasticsearch.Client {
-    config := GetConfig()
     cfg := elasticsearch.Config{
-        Addresses: config.Addresses,
+        Addresses: []string {
+            address,
+        },
     }
     es, err := elasticsearch.NewClient(cfg)
     if err != nil {
