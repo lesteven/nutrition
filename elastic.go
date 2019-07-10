@@ -11,7 +11,7 @@ import (
     "os"
 )
 
-var address = os.Getenv("address")
+var address = os.Getenv("ADDRESS")
 
 func InitElastic() *elasticsearch.Client {
     cfg := elasticsearch.Config{

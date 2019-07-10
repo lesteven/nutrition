@@ -8,18 +8,9 @@
 # Test binary, built with `go test -c`
 *.test
 
-# Output of the go coverage tool, specifically when used with LiteIDE
-*.out
-
-# Ignore all
-*
-
-# Unignore all with extensions
-!*.*
-
-# Unignore all dirs
-!*/
-
 # ignore transform error logs
 getErr.txt
 insertErr.txt
+
+# go binary
+nutrition
