@@ -4,7 +4,6 @@ import (
     "net/http"
     "github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/esutil"
-    "fmt"
     "encoding/json"
     "strconv"
     "log"
