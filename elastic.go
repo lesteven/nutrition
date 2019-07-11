@@ -9,6 +9,7 @@ import (
     "bytes"
     "encoding/json"
     "os"
+    "log"
 )
 
 var address = os.Getenv("ADDRESS")
@@ -21,6 +22,7 @@ func InitElastic() *elasticsearch.Client {
     }
     es, err := elasticsearch.NewClient(cfg)
     if err != nil {
+        log.Fatal(err)
         panic(err)
     }
     return es

@@ -7,6 +7,7 @@ import (
     "fmt"
     "encoding/json"
     "strconv"
+    "log"
 )
 
 type SearchData struct {
@@ -44,6 +45,7 @@ func fuzzySearch(w http.ResponseWriter, es *elasticsearch.Client,
     )
 
     if err != nil {
+        log.Fatal(err)
         panic(err)
     }
     defer res.Body.Close()
@@ -61,8 +63,7 @@ func ElasticHandler (es *elasticsearch.Client) http.HandlerFunc {
                 err := json.NewDecoder(r.Body).Decode(&search)
 
                 if err != nil {
-                    fmt.Println(err)
-                    fmt.Println("error with decoder")
+                    log.Fatal(err)
                     panic(err)
                 }
 
